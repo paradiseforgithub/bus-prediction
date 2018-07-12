@@ -12,26 +12,28 @@ pd.set_option('display.width',5000)
 # 取消科学计数
 # pd.set_option('display.float_format', lambda x: '%.5f' % x)
 
-# file_path = '901530_0.csv'
-# df = pd.read_csv(file_path)
+file_path = '901530_0.csv'
+df = pd.read_csv(file_path)
 
-# # print(df.shape)
+# print(df.shape)
 
-# # 时间戳转换由“20171001 07:07:23”转换成秒
-# def fun_time_to_time(t):
-# 	day = t.split(' ')[0]
-# 	# moment = t.split(' ')[1]
-# 	day = day[:4]+'-'+day[4:6]+'-'+day[6:]
-# 	temp = day+' '+t.split(' ')[1]
-# 	# x = time.strptime(temp, '%Y-%m-%d %H:%M:%S')
-# 	# y = time.mktime(x)
-# 	return temp
+# 时间戳转换由“20171001 07:07:23”转换成秒
+def fun_time_to_time(t):
+	day = t.split(' ')[0]
+	# moment = t.split(' ')[1]
+	day = day[:4]+'-'+day[4:6]+'-'+day[6:]
+	temp = day+' '+t.split(' ')[1]
+	# x = time.strptime(temp, '%Y-%m-%d %H:%M:%S')
+	# y = time.mktime(x)
+	return temp
 
-# # print(fun_time_to_time('20171001 07:07:43'))
+# print(fun_time_to_time('20171001 07:07:43'))
 
-# df['time_stamp'] = df['O_TIME'].map(lambda x: time.mktime(time.strptime(x, '%Y-%m-%d %H:%M:%S')))
-# df['diff_stationo'] = df['stationno'].diff()
-# df['diff_time_stamp'] = df['time_stamp'].diff()
+df['time_stamp'] = df['O_TIME'].map(lambda x: time.mktime(time.strptime(x, '%Y-%m-%d %H:%M:%S')))
+df['diff_stationo'] = df['stationno'].diff()
+df['diff_time_stamp'] = df['time_stamp'].diff()
+
+print(df)
 
 # idx = []
 # for i in df.index:
@@ -121,20 +123,46 @@ pd.set_option('display.width',5000)
 # # all.to_csv('new_901530_0.csv', index=None)
 # lstm_data.to_csv('lstm_901530_0.csv', index=None)
 
-from keras.utils import np_utils
-df = pd.read_csv('lstm_901530_0.csv')
-weekday = np.array(df['weekday'].values).reshape(df.shape[0], 1)
-stationno = np.array(df['stationno'].values).reshape(df.shape[0], 1)
-hour = np.array(df['hour'].values).reshape(df.shape[0], 1)
-onehot_weekday = np_utils.to_categorical(weekday)
-onehot_stationno = np_utils.to_categorical(stationno)
-onehot_hour = np_utils.to_categorical(hour)
+# from keras.utils import np_utils
+# from keras.models import Sequential
+# from keras.layers import Dense
+# from keras.layers import LSTM
 
-dataX = np.hstack((onehot_hour, onehot_stationno, onehot_weekday))
-dataY = np.array(df['sub_time_stamp'].values)
+# df = pd.read_csv('lstm_901530_0.csv')
+# weekday = np.array(df['weekday'].values).reshape(df.shape[0], 1)
+# stationno = np.array(df['stationno'].values).reshape(df.shape[0], 1)
+# hour = np.array(df['hour'].values).reshape(df.shape[0], 1)
+# onehot_weekday = np_utils.to_categorical(weekday)
+# onehot_stationno = np_utils.to_categorical(stationno)
+# onehot_hour = np_utils.to_categorical(hour)
 
-print(dataX.shape)
-print(dataY.shape)
+# print(onehot_weekday.shape, onehot_stationno.shape, onehot_hour.shape)
 
-X = dataX.reshape((dataX.shape[0], 1, 1))
-print(X)
+# dataX = np.hstack((onehot_hour, onehot_stationno, onehot_weekday))
+# dataY = np.array(df['sub_time_stamp'].values)
+
+# print(dataX.shape)
+# print(dataY.shape)
+
+# test_stationno = np_utils.to_categorical(np.array([x for x in range(13,31)]).reshape(18,1), num_classes=32)
+# test_hour = np_utils.to_categorical(np.array([11]*18).reshape(18,1), num_classes=20)
+# test_weekday = np_utils.to_categorical(np.array([4]*18).reshape(18,1), num_classes=7)
+# print(test_hour.shape, test_stationno.shape, test_weekday.shape)
+# test_X = np.hstack((test_hour, test_stationno, test_weekday))
+# test_X = test_X.reshape((test_X.shape[0], 1, test_X.shape[1]))
+# print(test_X)
+
+# X = dataX.reshape((dataX.shape[0], 1, dataX.shape[1]))
+# y = dataY
+
+# # print(X)
+# model = Sequential()
+# model.add(LSTM(100, input_shape=(X.shape[1], X.shape[2])))
+# model.add(Dense(1))
+# model.compile(loss='mae', optimizer='adam')
+
+# history = model.fit(X, y, epochs=200, batch_size=30, verbose=2, shuffle=False)
+# # print(history.history['loss'])
+
+# yhat = model.predict(test_X)
+# print(yhat)
